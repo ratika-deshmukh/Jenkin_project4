@@ -16,5 +16,10 @@ pipeline {
             sh 'curl http://localhost:4500'
           }
         }
+        stage('cleanup') {
+            steps {
+             sh '/usr/local/bin/docker-compose down'
+            }
+        }
     }
 }
