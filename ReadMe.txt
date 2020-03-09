@@ -1,6 +1,7 @@
 -------Instructions-------
 
 [1] Inside a folder -
+# Make sure root user has ssh-keygen executed and supply blank passphase
 # git clone https://github.com/CXMsanjay/docker-compose-ansible-lamp.git .
 
 [2] Execute below command -
