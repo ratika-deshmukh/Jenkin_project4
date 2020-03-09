@@ -3,6 +3,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                sh "sudo ssh-keygen -f id_rsa -t rsa -N ''"
                 sh '/usr/local/bin/docker-compose up -d'
             }
         }
