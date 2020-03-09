@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Deploy') {
           steps {
-            sh 'ansible-playbook -i inventory playbook1.yml'
+            sh 'sudo ansible-playbook -i inventory playbook1.yml'
           }
         }
         stage('Test') {
