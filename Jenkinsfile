@@ -1,0 +1,20 @@
+pipeline {
+    agent { any }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'docker-compose up -d'
+            }
+        }
+        stage('Deploy') {
+          steps {
+            sh 'ansible-playbook -i inventory playbook1.yml'
+          }
+        }
+        stage('Test') {
+          steps {
+            sh 'curl http://localhost:4500'
+          }
+        }
+    }
+}
