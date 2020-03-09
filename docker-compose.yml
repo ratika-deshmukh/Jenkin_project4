@@ -1,0 +1,53 @@
+version: '3'
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.70.0/24
+
+services:
+  web:
+    build: 
+      context: .
+      args:
+        package1: "php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo httpd"
+        op: install
+    volumes:
+      - ./code:/var/www/html/
+      - /root/.ssh/id_rsa.pub:/root/.ssh/authorized_keys
+    ports:
+      - "4500:80"
+    stdin_open: true
+    tty: true
+    privileged: true
+    hostname: apache
+    domainname: example.com
+    networks:
+      app_net:
+        ipv4_address: 192.168.70.10
+    links:
+      - db
+    command: >
+      bash -c "/usr/sbin/init && systemctl start sshd"
+
+  db:
+    build:
+      context: .
+      args:
+        package1: "mariadb mariadb-server"
+        op: groupinstall
+    command: >
+      bash -c "/usr/sbin/init && systemctl start sshd"
+    stdin_open: true
+    tty: true
+    privileged: true
+    hostname: db
+    domainname: example.com
+    volumes:
+      - /root/.ssh/id_rsa.pub:/root/.ssh/authorized_keys
+    networks:
+      app_net:
+        ipv4_address: 192.168.70.11

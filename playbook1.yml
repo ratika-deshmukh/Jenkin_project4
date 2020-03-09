@@ -1,0 +1,70 @@
+---
+- hosts: 192.168.70.11
+  vars:
+    list:
+      - mariadb
+      - mariadb-server
+      - MySQL-python
+  tasks:
+    - block:
+        - name: "Install epel-release"
+          yum:
+            name: "epel-release"
+            state: latest
+        - name: "Install mariadb"
+          yum:
+            name: "{{list}}"
+            state: latest
+
+        - name: "Start service"
+          service:
+            name: mariadb
+            state: started
+          register: service_start
+
+
+        - name: "Install pip"
+          yum:
+            name: python-pip
+            state: latest
+
+        - shell: "pip install pymysql"
+
+        - name: Sets the root password 
+          mysql_user: user=root password="redhat" host=localhost
+          when: service_start.changed
+
+        - name: Create customer database
+          shell: mysql -uroot -predhat -e "create database customer"
+          when: service_start.changed
+
+        - name: Create info table inside customer database
+          shell: mysql -uroot -predhat -e "create table customer.info(fname varchar(20), lname varchar(20))"
+          when: service_start.changed
+
+        - name: Insert details into customer.info table -
+          shell: mysql -uroot -predhat -e "insert into customer.info values('raj','sharma')"
+          when: service_start.changed
+          
+        - name: Allow root access from anywhere
+          shell: mysql -uroot -predhat -e "CREATE USER 'root'@'%' IDENTIFIED BY 'redhat'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';FLUSH PRIVILEGES;"
+          when: service_start.changed
+
+      rescue:
+        - name: Remove Packages
+          yum:
+            name: "{{list}}"
+            state: absent
+        - file:
+            name: "/var/lib/mysql"
+            state: absent
+
+- hosts: 192.168.70.10
+  tasks:
+    - yum:
+        name: httpd
+        state: latest
+    - service:
+        name: httpd
+        state: started
+...
