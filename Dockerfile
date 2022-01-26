@@ -1,4 +1,4 @@
-FROM yogi9312/centos:7
+FROM yogi9312/centos:8
 MAINTAINER "yogita" yogitasoni9312@gmail.com
 ENV container docker
 RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in ; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done);
